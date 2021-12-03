@@ -899,6 +899,19 @@ void Cmd_PlayerList_f(edict_t *ent)
 	gi.cprintf(ent, PRINT_HIGH, "%s", text);
 }
 
+void Cmd_UseAbility_f(edict_t *ent)
+{
+	int i;
+	char st[80];
+	char text[14];
+	edict_t *e2;
+
+	// connect time, ping, score, name
+	*text = 0;
+	sprintf(st, "test\n");
+	gi.cprintf(ent, PRINT_HIGH, "%s", text);
+}
+
 
 /*
 =================
@@ -987,6 +1000,8 @@ void ClientCommand (edict_t *ent)
 		Cmd_Wave_f (ent);
 	else if (Q_stricmp(cmd, "playerlist") == 0)
 		Cmd_PlayerList_f(ent);
+	else if (Q_stricmp(cmd, "ability") == 0)
+		Cmd_UseAbility_f(ent);
 	else	// anything that doesn't match a command will be a chat
 		Cmd_Say_f (ent, false, true);
 }

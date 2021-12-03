@@ -815,9 +815,6 @@ BLASTER / HYPERBLASTER
 
 void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, int effect)
 {
-	gclient_t* cl;
-	cl = ent->client;
-	gi.cprintf(cl, PRINT_HIGH, "test\n", (int)(1));
 	vec3_t	forward, right;
 	vec3_t	start;
 	vec3_t	offset;
@@ -855,15 +852,7 @@ void Weapon_Blaster_Fire (edict_t *ent)
 		damage = 15;
 	else
 		damage = 10;
-	int lastShot = 0;
-	if (lastShot <= level.time) {
-		Blaster_Fire(ent, vec3_origin, damage, false, EF_BLASTER);
-		Blaster_Fire(ent, vec3_origin, damage, false, EF_BLASTER);
-		Blaster_Fire(ent, vec3_origin, damage, false, EF_BLASTER);
-
-		lastShot += 333;
-	}
-	//Blaster_Fire (ent, vec3_origin, damage, false, EF_BLASTER);
+	Blaster_Fire(ent, vec3_origin, damage, false, EF_BLASTER);
 	ent->client->ps.gunframe++;
 }
 
@@ -1022,6 +1011,8 @@ void Machinegun_Fire (edict_t *ent)
 	AngleVectors (angles, forward, right, NULL);
 	VectorSet(offset, 0, 8, ent->viewheight-8);
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);
+
+
 	fire_bullet (ent, start, forward, damage, kick, DEFAULT_BULLET_HSPREAD, DEFAULT_BULLET_VSPREAD, MOD_MACHINEGUN);
 
 	gi.WriteByte (svc_muzzleflash);
@@ -1031,10 +1022,12 @@ void Machinegun_Fire (edict_t *ent)
 
 	PlayerNoise(ent, start, PNOISE_WEAPON);
 
-	if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
-		ent->client->pers.inventory[ent->client->ammo_index]--;
+	//if (! ( (int)dmflags->value & DF_INFINITE_AMMO ) )
+	//	ent->client->pers.inventory[ent->client->ammo_index]--;
 
 	ent->client->anim_priority = ANIM_ATTACK;
+
+	
 	if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 	{
 		ent->s.frame = FRAME_crattak1 - (int) (random()+0.25);
@@ -1053,6 +1046,7 @@ void Weapon_Machinegun (edict_t *ent)
 	static int	fire_frames[]	= {4, 5, 0};
 
 	Weapon_Generic (ent, 3, 5, 45, 49, pause_frames, fire_frames, Machinegun_Fire);
+
 }
 
 void Chaingun_Fire (edict_t *ent)
