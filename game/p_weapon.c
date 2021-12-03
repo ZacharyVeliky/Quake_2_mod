@@ -815,6 +815,9 @@ BLASTER / HYPERBLASTER
 
 void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, int effect)
 {
+	gclient_t* cl;
+	cl = ent->client;
+	gi.cprintf(cl, PRINT_HIGH, "test\n", (int)(1));
 	vec3_t	forward, right;
 	vec3_t	start;
 	vec3_t	offset;
@@ -829,7 +832,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	VectorScale (forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -1;
 
-	fire_blaster (ent, start, forward, damage, 1000, effect, hyper);
+	fire_blaster(ent, start, forward, damage, 500, effect, hyper);
 
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
@@ -852,7 +855,15 @@ void Weapon_Blaster_Fire (edict_t *ent)
 		damage = 15;
 	else
 		damage = 10;
-	Blaster_Fire (ent, vec3_origin, damage, false, EF_BLASTER);
+	int lastShot = 0;
+	if (lastShot <= level.time) {
+		Blaster_Fire(ent, vec3_origin, damage, false, EF_BLASTER);
+		Blaster_Fire(ent, vec3_origin, damage, false, EF_BLASTER);
+		Blaster_Fire(ent, vec3_origin, damage, false, EF_BLASTER);
+
+		lastShot += 333;
+	}
+	//Blaster_Fire (ent, vec3_origin, damage, false, EF_BLASTER);
 	ent->client->ps.gunframe++;
 }
 
