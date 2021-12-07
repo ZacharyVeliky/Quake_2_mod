@@ -1803,3 +1803,28 @@ void ClientBeginServerFrame (edict_t *ent)
 
 	client->latched_buttons = 0;
 }
+
+int playerClass = 1;
+
+
+char setClass(edict_t *ent, int newClass) {
+		
+	if (newClass == 1) {
+		playerClass = newClass;
+		ent->max_health = 75;
+		cvar_t
+		//return "Hunter";
+	}		
+	if (newClass == 2) {
+		playerClass = newClass;
+		//return "Warlock";
+	}
+	if (newClass == 3) {
+		playerClass = newClass;
+		//return "Titan";
+	}
+}
+
+int getClass() {
+	return playerClass;
+}

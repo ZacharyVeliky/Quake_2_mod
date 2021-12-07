@@ -901,15 +901,66 @@ void Cmd_PlayerList_f(edict_t *ent)
 
 void Cmd_UseAbility_f(edict_t *ent)
 {
-	int i;
 	char st[80];
-	char text[14];
-	edict_t *e2;
 
 	// connect time, ping, score, name
-	*text = 0;
 	sprintf(st, "test\n");
-	gi.cprintf(ent, PRINT_HIGH, "%s", text);
+}
+
+void Cmd_ChangeClass_f(edict_t *ent)
+{
+	gi.cprintf(ent, PRINT_HIGH, "Still being fixed");
+	return; // maybe fix later just use names for now
+	char text[2048];
+	const char nope[20];
+	char input[100];
+	sprintf(input, "%s", gi.argv(1));
+	gi.cprintf(ent, PRINT_HIGH, input);
+
+	strcat(text, "Class changed to: ");
+	if (input == "1") {
+		sprintf(text, "%c", setClass(1));
+	}
+	else if (gi.argv(1) == "2") {
+		strcat(text, setClass(2));
+		
+	}
+	else if (gi.argv(1) == "3") {
+		strcat(text, setClass(3));
+	}
+	else {
+		strcat(nope, "not a class");
+		gi.cprintf(ent, PRINT_HIGH, nope);
+		return;
+	}
+	gi.cprintf(ent, PRINT_HIGH, text);
+}
+
+void Cmd_ChangeHunter_f(edict_t* ent) {
+	char out[30];
+	setClass(1);
+	strcat(out, "Class changed to: Hunter");
+	gi.cprintf(ent, PRINT_HIGH, out);
+}
+
+void Cmd_ChangeWarlock_f(edict_t* ent) {
+	char out[30];
+	setClass(2);
+	strcat(out, "Class changed to: Warlock");
+	gi.cprintf(ent, PRINT_HIGH, out);
+}
+void Cmd_ChangeTitan_f(edict_t* ent) {
+	char out[30];
+	setClass(3);
+	strcat(out, "Class changed to: Titan");
+	gi.cprintf(ent, PRINT_HIGH, out);
+}
+
+
+void Cmd_CheckClass_f(edict_t* ent) {
+	char out[80];
+	sprintf(out, "% d \n", getClass());
+	gi.cprintf(ent, PRINT_HIGH, out);
 }
 
 
@@ -956,52 +1007,65 @@ void ClientCommand (edict_t *ent)
 	if (level.intermissiontime)
 		return;
 
-	if (Q_stricmp (cmd, "use") == 0)
-		Cmd_Use_f (ent);
-	else if (Q_stricmp (cmd, "drop") == 0)
-		Cmd_Drop_f (ent);
-	else if (Q_stricmp (cmd, "give") == 0)
-		Cmd_Give_f (ent);
-	else if (Q_stricmp (cmd, "god") == 0)
-		Cmd_God_f (ent);
-	else if (Q_stricmp (cmd, "notarget") == 0)
-		Cmd_Notarget_f (ent);
-	else if (Q_stricmp (cmd, "noclip") == 0)
-		Cmd_Noclip_f (ent);
-	else if (Q_stricmp (cmd, "inven") == 0)
-		Cmd_Inven_f (ent);
-	else if (Q_stricmp (cmd, "invnext") == 0)
-		SelectNextItem (ent, -1);
-	else if (Q_stricmp (cmd, "invprev") == 0)
-		SelectPrevItem (ent, -1);
-	else if (Q_stricmp (cmd, "invnextw") == 0)
-		SelectNextItem (ent, IT_WEAPON);
-	else if (Q_stricmp (cmd, "invprevw") == 0)
-		SelectPrevItem (ent, IT_WEAPON);
-	else if (Q_stricmp (cmd, "invnextp") == 0)
-		SelectNextItem (ent, IT_POWERUP);
-	else if (Q_stricmp (cmd, "invprevp") == 0)
-		SelectPrevItem (ent, IT_POWERUP);
-	else if (Q_stricmp (cmd, "invuse") == 0)
-		Cmd_InvUse_f (ent);
-	else if (Q_stricmp (cmd, "invdrop") == 0)
-		Cmd_InvDrop_f (ent);
-	else if (Q_stricmp (cmd, "weapprev") == 0)
-		Cmd_WeapPrev_f (ent);
-	else if (Q_stricmp (cmd, "weapnext") == 0)
-		Cmd_WeapNext_f (ent);
-	else if (Q_stricmp (cmd, "weaplast") == 0)
-		Cmd_WeapLast_f (ent);
-	else if (Q_stricmp (cmd, "kill") == 0)
-		Cmd_Kill_f (ent);
-	else if (Q_stricmp (cmd, "putaway") == 0)
-		Cmd_PutAway_f (ent);
-	else if (Q_stricmp (cmd, "wave") == 0)
-		Cmd_Wave_f (ent);
+	if (Q_stricmp(cmd, "use") == 0)
+		Cmd_Use_f(ent);
+	else if (Q_stricmp(cmd, "drop") == 0)
+		Cmd_Drop_f(ent);
+	else if (Q_stricmp(cmd, "give") == 0)
+		Cmd_Give_f(ent);
+	else if (Q_stricmp(cmd, "god") == 0)
+		Cmd_God_f(ent);
+	else if (Q_stricmp(cmd, "notarget") == 0)
+		Cmd_Notarget_f(ent);
+	else if (Q_stricmp(cmd, "noclip") == 0)
+		Cmd_Noclip_f(ent);
+	else if (Q_stricmp(cmd, "inven") == 0)
+		Cmd_Inven_f(ent);
+	else if (Q_stricmp(cmd, "invnext") == 0)
+		SelectNextItem(ent, -1);
+	else if (Q_stricmp(cmd, "invprev") == 0)
+		SelectPrevItem(ent, -1);
+	else if (Q_stricmp(cmd, "invnextw") == 0)
+		SelectNextItem(ent, IT_WEAPON);
+	else if (Q_stricmp(cmd, "invprevw") == 0)
+		SelectPrevItem(ent, IT_WEAPON);
+	else if (Q_stricmp(cmd, "invnextp") == 0)
+		SelectNextItem(ent, IT_POWERUP);
+	else if (Q_stricmp(cmd, "invprevp") == 0)
+		SelectPrevItem(ent, IT_POWERUP);
+	else if (Q_stricmp(cmd, "invuse") == 0)
+		Cmd_InvUse_f(ent);
+	else if (Q_stricmp(cmd, "invdrop") == 0)
+		Cmd_InvDrop_f(ent);
+	else if (Q_stricmp(cmd, "weapprev") == 0)
+		Cmd_WeapPrev_f(ent);
+	else if (Q_stricmp(cmd, "weapnext") == 0)
+		Cmd_WeapNext_f(ent);
+	else if (Q_stricmp(cmd, "weaplast") == 0)
+		Cmd_WeapLast_f(ent);
+	else if (Q_stricmp(cmd, "kill") == 0)
+		Cmd_Kill_f(ent);
+	else if (Q_stricmp(cmd, "putaway") == 0)
+		Cmd_PutAway_f(ent);
+	else if (Q_stricmp(cmd, "wave") == 0)
+		Cmd_Wave_f(ent);
 	else if (Q_stricmp(cmd, "playerlist") == 0)
 		Cmd_PlayerList_f(ent);
+	//my stuff
 	else if (Q_stricmp(cmd, "ability") == 0)
 		Cmd_UseAbility_f(ent);
+	else if (Q_stricmp(cmd, "hunter") == 0)
+		Cmd_ChangeHunter_f(ent);
+	else if (Q_stricmp(cmd, "warlock") == 0)
+		Cmd_ChangeWarlock_f(ent);
+	else if (Q_stricmp(cmd, "titan") == 0)
+		Cmd_ChangeTitan_f(ent);
+	else if (Q_stricmp(cmd, "class") == 0)
+		Cmd_ChangeClass_f(ent);
+	else if (Q_stricmp(cmd, "check") == 0)
+		Cmd_CheckClass_f(ent);
+
+	// end of my stuff
 	else	// anything that doesn't match a command will be a chat
-		Cmd_Say_f (ent, false, true);
+		return; //Cmd_Say_f (ent, false, true);
 }

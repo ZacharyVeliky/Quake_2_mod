@@ -959,6 +959,12 @@ struct gclient_s
 
 	edict_t		*chase_target;		// player we are chasing
 	qboolean	update_chase;		// need to update chase info?
+
+	//////////////////////////////
+	//All my crap
+	//////////////////////////////
+
+	int playerClass;
 };
 
 
@@ -1111,3 +1117,5 @@ struct edict_s
 	monsterinfo_t	monsterinfo;
 };
 
+char setClass(int newClass);
+int getClass();

@@ -15,11 +15,38 @@ C:\Users\zacha\git\Quake_2_mod\game\g_local.h(456,21): message : see declaration
 C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(897,9): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
 C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(885,3): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
 C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(893,4): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(905,13): warning C4459: declaration of 'st' hides global declaration
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(904,13): warning C4459: declaration of 'st' hides global declaration
 C:\Users\zacha\git\Quake_2_mod\game\g_local.h(456,21): message : see declaration of 'st'
-C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(911,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(907,11): warning C4101: 'e2': unreferenced local variable
-C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(904,6): warning C4101: 'i': unreferenced local variable
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(907,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(902,32): warning C4100: 'ent': unreferenced formal parameter
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(915,21): warning C4132: 'nope': const object should be initialized
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(920,8): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(921,18): warning C4130: '==': logical operation on address of string constant
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(924,28): warning C4130: '==': logical operation on address of string constant
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(925,9): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(925,27): warning C4047: 'function': 'const char *' differs in levels of indirection from 'char'
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(925,24): warning C4024: 'strcat': different types for formal and actual parameter 2
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(928,28): warning C4130: '==': logical operation on address of string constant
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(929,9): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(929,27): warning C4047: 'function': 'const char *' differs in levels of indirection from 'char'
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(929,24): warning C4024: 'strcat': different types for formal and actual parameter 2
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(932,9): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(932,14): warning C4090: 'function': different 'const' qualifiers
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(933,35): warning C4090: 'function': different 'const' qualifiers
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(917,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(922,3): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(942,8): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(949,8): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(955,8): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(962,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(917): warning C4702: unreachable code
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(922): warning C4702: unreachable code
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(924): warning C4702: unreachable code
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(925): warning C4702: unreachable code
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(928): warning C4702: unreachable code
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(929): warning C4702: unreachable code
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(932): warning C4702: unreachable code
+C:\Users\zacha\git\Quake_2_mod\game\g_cmds.c(936): warning C4702: unreachable code
 C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(1363,5): warning MSB8012: TargetPath(C:\Program Files (x86)\Steam\steamapps\common\Quake 2\MOD\game.dll) does not match the Linker's OutputFile property value (C:\Users\zacha\git\Quake_2_mod\release\gamex86.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
 C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(1365,5): warning MSB8012: TargetName(game) does not match the Linker's OutputFile property value (gamex86). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
      Creating library .\..\release\gamex86.lib and object .\..\release\gamex86.exp
