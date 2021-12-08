@@ -1117,5 +1117,6 @@ struct edict_s
 	monsterinfo_t	monsterinfo;
 };
 
-char setClass(int newClass);
+char setClass(edict_t *ent, int newClass);
 int getClass();
+void useAbility();

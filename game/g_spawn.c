@@ -264,6 +264,9 @@ spawn_t	spawns[] = {
 	{"turret_breach", SP_turret_breach},
 	{"turret_base", SP_turret_base},
 	{"turret_driver", SP_turret_driver},
+		// new stuff
+	{"warlock_ability", NULL},
+	{"titan_ability", NULL},
 
 	{NULL, NULL}
 };

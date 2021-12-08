@@ -399,6 +399,7 @@ static void Grenade_Explode (edict_t *ent)
 {
 	vec3_t		origin;
 	int			mod;
+	//edict_t* entm;
 
 	if (ent->owner->client)
 		PlayerNoise(ent->owner, ent->s.origin, PNOISE_IMPACT);
@@ -450,6 +451,11 @@ static void Grenade_Explode (edict_t *ent)
 	gi.multicast (ent->s.origin, MULTICAST_PHS);
 
 	G_FreeEdict (ent);
+	
+	ent = G_Spawn();
+	ent->s.origin[0] = ;
+	ent->s.origin[1] = v;
+	ent->s.origin[2] = v;
 }
 
 static void Grenade_Touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)

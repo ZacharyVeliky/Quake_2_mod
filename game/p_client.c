@@ -1828,3 +1828,7 @@ char setClass(edict_t *ent, int newClass) {
 int getClass() {
 	return playerClass;
 }
+
+void useAbility() {
+
+}
