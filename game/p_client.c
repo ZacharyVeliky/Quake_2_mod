@@ -36,6 +36,12 @@ void SP_misc_teleporter_dest (edict_t *ent);
 // we use carnal knowledge of the maps to fix the coop spot targetnames to match
 // that of the nearest named single player spot
 
+edict_t* player;
+int playerClass = 1;
+qboolean abilityOn = false;
+int abilityLength = 10000;
+float abilityOffTime = 0.0f;
+
 static void SP_FixCoopSpots (edict_t *self)
 {
 	edict_t	*spot;
@@ -1802,26 +1808,38 @@ void ClientBeginServerFrame (edict_t *ent)
 			PlayerTrail_Add (ent->s.old_origin);
 
 	client->latched_buttons = 0;
+	
+	// my stuff
+	if ((abilityOn == true) && (level.time > abilityOffTime)) {
+		if (getClass() == 1) {
+			player->flags ^= FL_NOTARGET;
+		}
+	}
+
 }
 
-int playerClass = 1;
+
+//edict_t* player;
+//int playerClass = 1;
+//qboolean abilityOn = false;
+//int abilityLength = 10000;
+//int abilityOffTime = 0;
 
 
-char setClass(edict_t *ent, int newClass) {
+char setClass(edict_t* ent, int newClass) {
 		
 	if (newClass == 1) {
 		playerClass = newClass;
+		setPlayer(ent);
 		ent->max_health = 75;
-		cvar_t
-		//return "Hunter";
+		ent->health = 75;
+		//cvar_t
 	}		
 	if (newClass == 2) {
 		playerClass = newClass;
-		//return "Warlock";
 	}
 	if (newClass == 3) {
 		playerClass = newClass;
-		//return "Titan";
 	}
 }
 
@@ -1831,4 +1849,12 @@ int getClass() {
 
 void useAbility() {
 
+}
+void setPlayer(edict_t* ent) {
+	player = ent;
+}
+
+void activateAbility() {
+	abilityOn = true;
+	abilityOffTime = level.time + 10.0f;
 }

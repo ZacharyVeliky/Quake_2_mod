@@ -397,6 +397,7 @@ fire_grenade
 */
 static void Grenade_Explode (edict_t *ent)
 {
+	vec3_t	v;
 	vec3_t		origin;
 	int			mod;
 	//edict_t* entm;
@@ -448,14 +449,18 @@ static void Grenade_Explode (edict_t *ent)
 			gi.WriteByte (TE_ROCKET_EXPLOSION);
 	}
 	gi.WritePosition (origin);
-	gi.multicast (ent->s.origin, MULTICAST_PHS);
+	gi.multicast (ent->s.origin, PRINT_HIGH);
 
-	G_FreeEdict (ent);
+	//G_FreeEdict (ent);
 	
 	ent = G_Spawn();
-	ent->s.origin[0] = ;
-	ent->s.origin[1] = v;
-	ent->s.origin[2] = v;
+	ent->s.origin[0] = ent->pos1[0];
+	ent->s.origin[1] = ent->pos1[1];
+	ent->s.origin[2] = ent->pos1[2];
+	ent->model = "models/items/healing/medium/tris.md2";
+	ent->count = 10;
+	SpawnItem(ent, FindItem("Health"));
+
 }
 
 static void Grenade_Touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)

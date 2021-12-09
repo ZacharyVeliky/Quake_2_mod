@@ -902,6 +902,20 @@ void Cmd_PlayerList_f(edict_t *ent)
 void Cmd_UseAbility_f(edict_t *ent)
 {
 	char st[80];
+	int cl = getClass();
+	edict_t* player;
+
+
+	if (cl == 1) {
+		ent->flags ^= FL_NOTARGET;
+		activateAbility();
+	}
+	else if (cl == 2) {
+
+	}
+	else if (cl == 3) {
+
+	}
 
 	// connect time, ping, score, name
 	sprintf(st, "test\n");
@@ -914,19 +928,17 @@ void Cmd_ChangeClass_f(edict_t *ent)
 	char text[2048];
 	const char nope[20];
 	char input[100];
-	sprintf(input, "%s", gi.argv(1));
-	gi.cprintf(ent, PRINT_HIGH, input);
 
 	strcat(text, "Class changed to: ");
 	if (input == "1") {
-		sprintf(text, "%c", setClass(1));
+		sprintf(text, "%c", setClass(ent, 1));
 	}
 	else if (gi.argv(1) == "2") {
-		strcat(text, setClass(2));
+		strcat(text, setClass(ent, 2));
 		
 	}
 	else if (gi.argv(1) == "3") {
-		strcat(text, setClass(3));
+		strcat(text, setClass(ent, 3));
 	}
 	else {
 		strcat(nope, "not a class");
@@ -938,20 +950,20 @@ void Cmd_ChangeClass_f(edict_t *ent)
 
 void Cmd_ChangeHunter_f(edict_t* ent) {
 	char out[30];
-	setClass(1);
+	setClass(ent, 1);
 	strcat(out, "Class changed to: Hunter");
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
 
 void Cmd_ChangeWarlock_f(edict_t* ent) {
 	char out[30];
-	setClass(2);
+	setClass(ent, 2);
 	strcat(out, "Class changed to: Warlock");
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
 void Cmd_ChangeTitan_f(edict_t* ent) {
 	char out[30];
-	setClass(3);
+	setClass(ent, 3);
 	strcat(out, "Class changed to: Titan");
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
@@ -960,6 +972,14 @@ void Cmd_ChangeTitan_f(edict_t* ent) {
 void Cmd_CheckClass_f(edict_t* ent) {
 	char out[80];
 	sprintf(out, "% d \n", getClass());
+	gi.cprintf(ent, PRINT_HIGH, out);
+}
+
+void Cmd_CheckTime_f(edict_t* ent) {
+	char out[80];
+	sprintf(out, "% f \n", level.time);
+	gi.cprintf(ent, PRINT_HIGH, out);
+	sprintf(out, "% d \n", level.framenum);
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
 
@@ -1064,6 +1084,8 @@ void ClientCommand (edict_t *ent)
 		Cmd_ChangeClass_f(ent);
 	else if (Q_stricmp(cmd, "check") == 0)
 		Cmd_CheckClass_f(ent);
+	else if (Q_stricmp(cmd, "time") == 0)
+		Cmd_CheckTime_f(ent);
 
 	// end of my stuff
 	else	// anything that doesn't match a command will be a chat

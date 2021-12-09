@@ -964,7 +964,9 @@ struct gclient_s
 	//All my crap
 	//////////////////////////////
 
-	int playerClass;
+	int			playerClass;
+	float		stealth_framenum;
+
 };
 
 
@@ -1120,3 +1122,8 @@ struct edict_s
 char setClass(edict_t *ent, int newClass);
 int getClass();
 void useAbility();
+void setPlayer(edict_t *ent);
+
+qboolean abilityOn;
+int abilityLength;
+int abilityOffTime;
