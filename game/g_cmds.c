@@ -907,7 +907,6 @@ void Cmd_UseAbility_f(edict_t *ent)
 
 
 	if (cl == 1) {
-		ent->flags ^= FL_NOTARGET;
 		activateAbility();
 	}
 	else if (cl == 2) {
@@ -916,36 +915,6 @@ void Cmd_UseAbility_f(edict_t *ent)
 	else if (cl == 3) {
 
 	}
-
-	// connect time, ping, score, name
-	sprintf(st, "test\n");
-}
-
-void Cmd_ChangeClass_f(edict_t *ent)
-{
-	gi.cprintf(ent, PRINT_HIGH, "Still being fixed");
-	return; // maybe fix later just use names for now
-	char text[2048];
-	const char nope[20];
-	char input[100];
-
-	strcat(text, "Class changed to: ");
-	if (input == "1") {
-		sprintf(text, "%c", setClass(ent, 1));
-	}
-	else if (gi.argv(1) == "2") {
-		strcat(text, setClass(ent, 2));
-		
-	}
-	else if (gi.argv(1) == "3") {
-		strcat(text, setClass(ent, 3));
-	}
-	else {
-		strcat(nope, "not a class");
-		gi.cprintf(ent, PRINT_HIGH, nope);
-		return;
-	}
-	gi.cprintf(ent, PRINT_HIGH, text);
 }
 
 void Cmd_ChangeHunter_f(edict_t* ent) {
@@ -961,17 +930,11 @@ void Cmd_ChangeWarlock_f(edict_t* ent) {
 	strcat(out, "Class changed to: Warlock");
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
+
 void Cmd_ChangeTitan_f(edict_t* ent) {
 	char out[30];
 	setClass(ent, 3);
 	strcat(out, "Class changed to: Titan");
-	gi.cprintf(ent, PRINT_HIGH, out);
-}
-
-
-void Cmd_CheckClass_f(edict_t* ent) {
-	char out[80];
-	sprintf(out, "% d \n", getClass());
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
 
@@ -1080,10 +1043,6 @@ void ClientCommand (edict_t *ent)
 		Cmd_ChangeWarlock_f(ent);
 	else if (Q_stricmp(cmd, "titan") == 0)
 		Cmd_ChangeTitan_f(ent);
-	else if (Q_stricmp(cmd, "class") == 0)
-		Cmd_ChangeClass_f(ent);
-	else if (Q_stricmp(cmd, "check") == 0)
-		Cmd_CheckClass_f(ent);
 	else if (Q_stricmp(cmd, "time") == 0)
 		Cmd_CheckTime_f(ent);
 

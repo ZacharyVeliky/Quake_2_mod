@@ -662,3 +662,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 	}
 }
 
+edict_t getPlayer() {
+	sv_player = sv_client->edict;
+	ge->ClientCommand(sv_player);
+}

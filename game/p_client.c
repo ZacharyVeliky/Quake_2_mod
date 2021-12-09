@@ -40,7 +40,7 @@ edict_t* player;
 int playerClass = 1;
 qboolean abilityOn = false;
 int abilityLength = 10000;
-float abilityOffTime = 0.0f;
+int abilityOffFrame = 0;
 
 static void SP_FixCoopSpots (edict_t *self)
 {
@@ -1810,9 +1810,9 @@ void ClientBeginServerFrame (edict_t *ent)
 	client->latched_buttons = 0;
 	
 	// my stuff
-	if ((abilityOn == true) && (level.time > abilityOffTime)) {
+	if ((abilityOn == true) && (level.framenum > abilityOffFrame)) {
 		if (getClass() == 1) {
-			player->flags ^= FL_NOTARGET;
+			deactivateAbility();
 		}
 	}
 
@@ -1852,9 +1852,23 @@ void useAbility() {
 }
 void setPlayer(edict_t* ent) {
 	player = ent;
+	char out[30];
+	strcat(out, "got player");
+	gi.cprintf(ent, PRINT_HIGH, out);
 }
 
 void activateAbility() {
 	abilityOn = true;
-	abilityOffTime = level.time + 10.0f;
+	abilityOffFrame = level.framenum + 10;
+	if (getClass() == 1)
+		player->flags ^= FL_NOTARGET;
+
+	/*char out[30];
+	strcat(out, level.framenum);
+	gi.cprintf(player, PRINT_HIGH, out);*/
+}
+
+void deactivateAbility() {
+	abilityOn = false;
+	player->flags ^= FL_NOTARGET;
 }

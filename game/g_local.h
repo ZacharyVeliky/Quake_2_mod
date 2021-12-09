@@ -1123,7 +1123,10 @@ char setClass(edict_t *ent, int newClass);
 int getClass();
 void useAbility();
 void setPlayer(edict_t *ent);
+void deactivateAbility();
+void activateAbility();
 
 qboolean abilityOn;
 int abilityLength;
-int abilityOffTime;
+int abilityOffFrame;
+
