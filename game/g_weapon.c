@@ -329,6 +329,7 @@ void blaster_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *
 	}
 	else
 	{
+		return;
 		gi.WriteByte (svc_temp_entity);
 		gi.WriteByte (TE_BLASTER);
 		gi.WritePosition (self->s.origin);
@@ -360,7 +361,7 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	VectorCopy (start, bolt->s.old_origin);
 	vectoangles (dir, bolt->s.angles);
 	VectorScale (dir, speed, bolt->velocity);
-	bolt->movetype = MOVETYPE_FLYMISSILE;
+	bolt->movetype = MOVETYPE_RICOCHET; // revert to MOVETYPE_FLYMISSILE if broken
 	bolt->clipmask = MASK_SHOT;
 	bolt->solid = SOLID_BBOX;
 	bolt->s.effects |= effect;
@@ -400,7 +401,7 @@ static void Grenade_Explode (edict_t *ent)
 	vec3_t	v;
 	vec3_t		origin;
 	int			mod;
-	//edict_t* entm;
+	
 
 	if (ent->owner->client)
 		PlayerNoise(ent->owner, ent->s.origin, PNOISE_IMPACT);
@@ -449,18 +450,43 @@ static void Grenade_Explode (edict_t *ent)
 			gi.WriteByte (TE_ROCKET_EXPLOSION);
 	}
 	gi.WritePosition (origin);
+	gi.multicast (ent->s.origin, MULTICAST_PHS);
 	gi.multicast (ent->s.origin, PRINT_HIGH);
+	G_FreeEdict (ent);
 
-	//G_FreeEdict (ent);
-	
-	ent = G_Spawn();
-	ent->s.origin[0] = ent->pos1[0];
+	//ent = G_Spawn();
+
+
+	/*edict_t* ability_health;
+	edict_t* target;
+	trace_t		tr;
+	ability_health = G_Spawn();
+	VectorCopy(ent->s.origin, ability_health->s.origin);
+	ability_health->s.origin[2] += 25;
+
+	int i;
+
+	SP_item_health(ability_health);
+
+	tr = gi.trace(ability_health->s.origin, ability_health->mins, ability_health->maxs, ent->s.origin, ent, MASK_SHOT);
+	if (tr.fraction < 1)
+	{
+		VectorAdd(tr.plane.normal, ability_health->s.origin, ability_health->s.origin);
+	}
+
+	ability_health->team = ent->owner->team;
+	ability_health->owner = ent->owner;
+	gi.linkentity(ability_health);*/
+
+
+	/*ent->s.origin[0] = ent->pos1[0];
 	ent->s.origin[1] = ent->pos1[1];
 	ent->s.origin[2] = ent->pos1[2];
 	ent->model = "models/items/healing/medium/tris.md2";
 	ent->count = 10;
-	SpawnItem(ent, FindItem("Health"));
+	SpawnItem(ent, FindItem("Health"));*/
 
+	
 }
 
 static void Grenade_Touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)

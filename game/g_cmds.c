@@ -920,21 +920,21 @@ void Cmd_UseAbility_f(edict_t *ent)
 void Cmd_ChangeHunter_f(edict_t* ent) {
 	char out[30];
 	setClass(ent, 1);
-	strcat(out, "Class changed to: Hunter");
+	strcat(out, "Class changed to: Hunter\n");
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
 
 void Cmd_ChangeWarlock_f(edict_t* ent) {
 	char out[30];
 	setClass(ent, 2);
-	strcat(out, "Class changed to: Warlock");
+	strcat(out, "Class changed to: Warlock\n");
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
 
 void Cmd_ChangeTitan_f(edict_t* ent) {
 	char out[30];
 	setClass(ent, 3);
-	strcat(out, "Class changed to: Titan");
+	strcat(out, "Class changed to: Titan\n");
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
 

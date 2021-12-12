@@ -1828,18 +1828,24 @@ void ClientBeginServerFrame (edict_t *ent)
 
 char setClass(edict_t* ent, int newClass) {
 		
-	if (newClass == 1) {
+	if (newClass == 1) { //hunter
 		playerClass = newClass;
 		setPlayer(ent);
 		ent->max_health = 75;
 		ent->health = 75;
 		//cvar_t
 	}		
-	if (newClass == 2) {
+	if (newClass == 2) { //warlock
 		playerClass = newClass;
+		setPlayer(ent);
+		ent->max_health = 100;
+		ent->health = 100;
 	}
-	if (newClass == 3) {
+	if (newClass == 3) { //titan
 		playerClass = newClass;
+		setPlayer(ent);
+		ent->max_health = 125;
+		ent->health = 125;
 	}
 }
 
@@ -1850,18 +1856,41 @@ int getClass() {
 void useAbility() {
 
 }
+
 void setPlayer(edict_t* ent) {
 	player = ent;
 	char out[30];
-	strcat(out, "got player");
+	strcat(out, player->s.origin);
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
 
 void activateAbility() {
-	abilityOn = true;
-	abilityOffFrame = level.framenum + 10;
-	if (getClass() == 1)
-		player->flags ^= FL_NOTARGET;
+	int curentClass = getClass();
+	if (curentClass == 1) {
+		abilityOn = true;
+		abilityOffFrame = level.framenum + 100;
+		if (getClass() == 1)
+			player->flags ^= FL_NOTARGET;
+	}
+	else if (curentClass == 2){
+		edict_t* ability_health;
+		edict_t* target;
+		trace_t		tr;
+		ability_health = G_Spawn();
+		VectorCopy(player->s.origin, ability_health->s.origin);
+		ability_health->s.origin[2] += 25;
+
+		SP_item_health(ability_health);
+
+		/*tr = gi.trace(ability_health->s.origin, ability_health->mins, ability_health->maxs, player->s.origin, player, MASK_SHOT);
+		if (tr.fraction < 1){
+			VectorAdd(tr.plane.normal, ability_health->s.origin, ability_health->s.origin);
+		}*/
+
+		ability_health->team = player->owner->team;
+		ability_health->owner = player->owner;
+		gi.linkentity(ability_health);
+	}
 
 	/*char out[30];
 	strcat(out, level.framenum);
