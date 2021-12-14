@@ -196,7 +196,7 @@ MOVETYPE_FLY,
 MOVETYPE_TOSS,			// gravity
 MOVETYPE_FLYMISSILE,	// extra size to monsters
 MOVETYPE_BOUNCE,
-MOVETYPE_RICOCHET		// Bullet bouncing for Hardlight
+MOVETYPE_HARDLIGHT		// Bullet bouncing for Hardlight
 } movetype_t;
 
 
@@ -734,6 +734,8 @@ void fire_grenade2 (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage);
 void fire_rail (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick);
 void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius);
+void fire_bfg2(edict_t* self, vec3_t start, vec3_t start2, vec3_t dir, int damage, int speed, float damage_radius);
+void fire_bfg3(edict_t* self, vec3_t start, vec3_t start2, vec3_t start3, vec3_t dir, int damage, int speed, float damage_radius);
 
 //
 // g_ptrail.c
@@ -1120,14 +1122,30 @@ struct edict_s
 	monsterinfo_t	monsterinfo;
 };
 
-char setClass(edict_t *ent, int newClass);
+char setClass(int newClass);
 int getClass();
-void useAbility();
 void setPlayer(edict_t *ent);
+edict_t* getPlayer();
 void deactivateAbility();
 void activateAbility();
+qboolean getSuperStatus();
+void setSuperShots();
+void useSuperShots();
+int getSuperShots();
+void activateSuper();
 
 qboolean abilityOn;
 int abilityLength;
 int abilityOffFrame;
 
+
+int skillLevel;
+int experience;
+
+void addExperience();
+void quickLevel();
+int getLevel();
+int getExp();
+
+int getExotic();
+void setExotic(int index);

@@ -899,42 +899,34 @@ void Cmd_PlayerList_f(edict_t *ent)
 	gi.cprintf(ent, PRINT_HIGH, "%s", text);
 }
 
-void Cmd_UseAbility_f(edict_t *ent)
-{
-	char st[80];
-	int cl = getClass();
-	edict_t* player;
-
-
-	if (cl == 1) {
+void Cmd_UseAbility_f(edict_t *ent){
+	if (getClass() != 0)
 		activateAbility();
-	}
-	else if (cl == 2) {
+}
 
-	}
-	else if (cl == 3) {
-
-	}
+void Cmd_UseSuper_f(edict_t *ent){
+	if (getClass != 0)
+		activateSuper();
 }
 
 void Cmd_ChangeHunter_f(edict_t* ent) {
-	char out[30];
-	setClass(ent, 1);
-	strcat(out, "Class changed to: Hunter\n");
+	setClass(1);
+	char out[40];
+	sprintf(out, "% s \n", "Class changed to: Hunter");
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
 
 void Cmd_ChangeWarlock_f(edict_t* ent) {
-	char out[30];
-	setClass(ent, 2);
-	strcat(out, "Class changed to: Warlock\n");
+	setClass(2);
+	char out[40];
+	sprintf(out, "% s \n", "Class changed to: Warlock");
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
 
 void Cmd_ChangeTitan_f(edict_t* ent) {
-	char out[30];
-	setClass(ent, 3);
-	strcat(out, "Class changed to: Titan\n");
+	setClass(3);
+	char out[40];
+	sprintf(out, "% s \n", "Class changed to: Titan");
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
 
@@ -945,6 +937,66 @@ void Cmd_CheckTime_f(edict_t* ent) {
 	sprintf(out, "% d \n", level.framenum);
 	gi.cprintf(ent, PRINT_HIGH, out);
 }
+
+void Cmd_LevelUp_f(edict_t* ent) {
+	char out[80];
+	quickLevel();
+	sprintf(out, "% s \n", "Level up!");
+	gi.cprintf(ent, PRINT_HIGH, out);
+}
+
+void Cmd_GetLevel_f(edict_t* ent) {
+	char out[80];
+	sprintf(out, "Level: %d \n", getLevel());
+	gi.cprintf(ent, PRINT_HIGH, out);
+}
+
+void Cmd_Start_f(edict_t* ent) {
+	setPlayer(ent);
+}
+
+void Cmd_ListItems_f(edict_t* ent) {
+	char out[100];
+	sprintf(out, "1 = Heal on hunter ability\n");
+	gi.cprintf(ent, PRINT_HIGH, out);
+
+	sprintf(out, "2 = Change hunter super into one powerful shot\n");
+	gi.cprintf(ent, PRINT_HIGH, out);
+
+	sprintf(out, "3 = Drop health packs on warlock super\n");
+	gi.cprintf(ent, PRINT_HIGH, out);
+
+	sprintf(out, "4 = Buff warlock super\n");
+	gi.cprintf(ent, PRINT_HIGH, out);
+
+	sprintf(out, "5 = Add damage buff to titan super\n");
+	gi.cprintf(ent, PRINT_HIGH, out);
+	sprintf(out, "Type equip and the number to equip the buff item\n");
+	gi.cprintf(ent, PRINT_HIGH, out);
+
+}
+
+void Cmd_EquipItem1_f(edict_t* ent) {
+	setExotic(1);
+}
+
+void Cmd_EquipItem2_f(edict_t* ent) {
+	setExotic(2);
+}
+
+void Cmd_EquipItem3_f(edict_t* ent) {
+	setExotic(3);
+}
+
+void Cmd_EquipItem4_f(edict_t* ent) {
+	setExotic(4);
+}
+
+void Cmd_EquipItem5_f(edict_t* ent) {
+	setExotic(5);
+}
+
+
 
 
 /*
@@ -1037,6 +1089,8 @@ void ClientCommand (edict_t *ent)
 	//my stuff
 	else if (Q_stricmp(cmd, "ability") == 0)
 		Cmd_UseAbility_f(ent);
+	else if (Q_stricmp(cmd, "super") == 0)
+		Cmd_UseSuper_f(ent);
 	else if (Q_stricmp(cmd, "hunter") == 0)
 		Cmd_ChangeHunter_f(ent);
 	else if (Q_stricmp(cmd, "warlock") == 0)
@@ -1045,6 +1099,24 @@ void ClientCommand (edict_t *ent)
 		Cmd_ChangeTitan_f(ent);
 	else if (Q_stricmp(cmd, "time") == 0)
 		Cmd_CheckTime_f(ent);
+	else if (Q_stricmp(cmd, "levelup") == 0)
+		Cmd_LevelUp_f(ent);
+	else if (Q_stricmp(cmd, "level") == 0)
+		Cmd_GetLevel_f(ent);
+	else if (Q_stricmp(cmd, "start") == 0)
+		Cmd_Start_f(ent);
+	else if (Q_stricmp(cmd, "items") == 0)
+		Cmd_ListItems_f(ent);
+	else if (Q_stricmp(cmd, "equip1") == 0)
+		Cmd_EquipItem1_f(ent);
+	else if (Q_stricmp(cmd, "equip2") == 0)
+		Cmd_EquipItem2_f(ent);
+	else if (Q_stricmp(cmd, "equip3") == 0)
+		Cmd_EquipItem3_f(ent);
+	else if (Q_stricmp(cmd, "equip4") == 0)
+		Cmd_EquipItem4_f(ent);
+	else if (Q_stricmp(cmd, "equip5") == 0)
+		Cmd_EquipItem5_f(ent);
 
 	// end of my stuff
 	else	// anything that doesn't match a command will be a chat

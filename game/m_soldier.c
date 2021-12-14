@@ -883,6 +883,8 @@ void soldier_fire7 (edict_t *self)
 
 void soldier_dead (edict_t *self)
 {
+	//addExperience();
+
 	VectorSet (self->mins, -16, -16, -24);
 	VectorSet (self->maxs, 16, 16, -8);
 	self->movetype = MOVETYPE_TOSS;
@@ -1144,6 +1146,7 @@ mmove_t soldier_move_death6 = {FRAME_death601, FRAME_death610, soldier_frames_de
 void soldier_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
 	int		n;
+	addExperience();
 
 // check for gib
 	if (self->health <= self->gib_health)

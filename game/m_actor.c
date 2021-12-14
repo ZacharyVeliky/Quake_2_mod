@@ -297,13 +297,15 @@ void actorMachineGun (edict_t *self)
 
 
 void actor_dead (edict_t *self)
-{
+{	
 	VectorSet (self->mins, -16, -16, -24);
 	VectorSet (self->maxs, 16, 16, -8);
 	self->movetype = MOVETYPE_TOSS;
 	self->svflags |= SVF_DEADMONSTER;
 	self->nextthink = 0;
 	gi.linkentity (self);
+	
+
 }
 
 mframe_t actor_frames_death1 [] =
@@ -339,7 +341,6 @@ mmove_t actor_move_death2 = {FRAME_death201, FRAME_death213, actor_frames_death2
 void actor_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
 	int		n;
-
 // check for gib
 	if (self->health <= -80)
 	{
@@ -366,6 +367,8 @@ void actor_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
 		self->monsterinfo.currentmove = &actor_move_death1;
 	else
 		self->monsterinfo.currentmove = &actor_move_death2;
+
+	
 }
 
 

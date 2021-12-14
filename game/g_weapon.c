@@ -329,6 +329,45 @@ void blaster_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *
 	}
 	else
 	{
+		gi.WriteByte (svc_temp_entity);
+		gi.WriteByte (TE_BLASTER);
+		gi.WritePosition (self->s.origin);
+		if (!plane)
+			gi.WriteDir (vec3_origin);
+		else
+			gi.WriteDir (plane->normal);
+		gi.multicast (self->s.origin, MULTICAST_PVS);
+	}
+
+	G_FreeEdict (self);
+}
+
+void blaster_touch_hardlight (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
+{
+	int		mod;
+
+	if (other == self->owner)
+		return;
+
+	if (surf && (surf->flags & SURF_SKY))
+	{
+		G_FreeEdict (self);
+		return;
+	}
+
+	if (self->owner->client)
+		PlayerNoise(self->owner, self->s.origin, PNOISE_IMPACT);
+
+	if (other->takedamage)
+	{
+		if (self->spawnflags & 1)
+			mod = MOD_HYPERBLASTER;
+		else
+			mod = MOD_BLASTER;
+		T_Damage (other, self, self->owner, self->velocity, self->s.origin, plane->normal, self->dmg, 1, DAMAGE_ENERGY, mod);
+	}
+	else
+	{
 		return;
 		gi.WriteByte (svc_temp_entity);
 		gi.WriteByte (TE_BLASTER);
@@ -361,7 +400,10 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	VectorCopy (start, bolt->s.old_origin);
 	vectoangles (dir, bolt->s.angles);
 	VectorScale (dir, speed, bolt->velocity);
-	bolt->movetype = MOVETYPE_RICOCHET; // revert to MOVETYPE_FLYMISSILE if broken
+	if (hyper == true)
+		bolt->movetype = MOVETYPE_HARDLIGHT;
+	else
+		bolt->movetype = MOVETYPE_FLYMISSILE;
 	bolt->clipmask = MASK_SHOT;
 	bolt->solid = SOLID_BBOX;
 	bolt->s.effects |= effect;
@@ -370,7 +412,10 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	bolt->s.modelindex = gi.modelindex ("models/objects/laser/tris.md2");
 	bolt->s.sound = gi.soundindex ("misc/lasfly.wav");
 	bolt->owner = self;
-	bolt->touch = blaster_touch;
+	if (hyper == true)
+		bolt->touch = blaster_touch_hardlight;
+	else
+		bolt->touch = blaster_touch;
 	bolt->nextthink = level.time + 2;
 	bolt->think = G_FreeEdict;
 	bolt->dmg = damage;
@@ -452,41 +497,8 @@ static void Grenade_Explode (edict_t *ent)
 	gi.WritePosition (origin);
 	gi.multicast (ent->s.origin, MULTICAST_PHS);
 	gi.multicast (ent->s.origin, PRINT_HIGH);
+
 	G_FreeEdict (ent);
-
-	//ent = G_Spawn();
-
-
-	/*edict_t* ability_health;
-	edict_t* target;
-	trace_t		tr;
-	ability_health = G_Spawn();
-	VectorCopy(ent->s.origin, ability_health->s.origin);
-	ability_health->s.origin[2] += 25;
-
-	int i;
-
-	SP_item_health(ability_health);
-
-	tr = gi.trace(ability_health->s.origin, ability_health->mins, ability_health->maxs, ent->s.origin, ent, MASK_SHOT);
-	if (tr.fraction < 1)
-	{
-		VectorAdd(tr.plane.normal, ability_health->s.origin, ability_health->s.origin);
-	}
-
-	ability_health->team = ent->owner->team;
-	ability_health->owner = ent->owner;
-	gi.linkentity(ability_health);*/
-
-
-	/*ent->s.origin[0] = ent->pos1[0];
-	ent->s.origin[1] = ent->pos1[1];
-	ent->s.origin[2] = ent->pos1[2];
-	ent->model = "models/items/healing/medium/tris.md2";
-	ent->count = 10;
-	SpawnItem(ent, FindItem("Health"));*/
-
-	
 }
 
 static void Grenade_Touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
@@ -520,6 +532,42 @@ static void Grenade_Touch (edict_t *ent, edict_t *other, cplane_t *plane, csurfa
 	Grenade_Explode (ent);
 }
 
+static void Wolfpack_touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
+{
+	vec3_t		origin;
+	int			n;
+
+	if (other == ent->owner)
+		return;
+
+	if (surf && (surf->flags & SURF_SKY))
+	{
+		G_FreeEdict(ent);
+		return;
+	}
+
+	if (ent->owner->client)
+		PlayerNoise(ent->owner, ent->s.origin, PNOISE_IMPACT);
+
+	// calculate position for the explosion entity
+	VectorMA(ent->s.origin, -0.02, ent->velocity, origin);
+
+	if (other->takedamage){
+		T_Damage(other, ent, ent->owner, ent->velocity, ent->s.origin, plane->normal, ent->dmg, 0, 0, MOD_ROCKET);
+	}
+
+	T_RadiusDamage(ent, ent->owner, ent->radius_dmg, other, ent->dmg_radius, MOD_R_SPLASH);
+
+	gi.WriteByte(svc_temp_entity);
+	if (ent->waterlevel)
+		gi.WriteByte(TE_ROCKET_EXPLOSION_WATER);
+	else
+		gi.WriteByte(TE_ROCKET_EXPLOSION);
+	gi.WritePosition(origin);
+	gi.multicast(ent->s.origin, MULTICAST_PHS);
+	G_FreeEdict(ent);
+}
+
 void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, float timer, float damage_radius)
 {
 	edict_t	*grenade;
@@ -543,7 +591,7 @@ void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int s
 	VectorClear (grenade->maxs);
 	grenade->s.modelindex = gi.modelindex ("models/objects/grenade/tris.md2");
 	grenade->owner = self;
-	grenade->touch = Grenade_Touch;
+	grenade->touch = Wolfpack_touch;
 	grenade->nextthink = level.time + timer;
 	grenade->think = Grenade_Explode;
 	grenade->dmg = damage;
@@ -551,6 +599,132 @@ void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int s
 	grenade->classname = "grenade";
 
 	gi.linkentity (grenade);
+}
+
+void wolfpack_rocket(edict_t* ent)
+{
+	edict_t* target = NULL;
+	edict_t* entities = NULL;
+	vec3_t	targetdir, entdir;
+	vec_t	speed;
+
+	while ((entities = findradius(entities, ent->s.origin, 1000)) != NULL) {
+		if (!(entities->svflags & SVF_MONSTER) && !entities->client)
+			continue;
+		if (entities == ent->owner)
+			continue;
+		if (!entities->takedamage)
+			continue;
+		if (entities->health <= 0)
+			continue;
+		if (!visible(ent, entities))
+			continue;
+		if (!infront(ent, entities))
+			continue;
+		VectorSubtract(entities->s.origin, ent->s.origin, entdir);
+		entdir[2] += 16;
+		if ((target == NULL) || (VectorLength(entdir) < VectorLength(targetdir)))
+		{
+			target = entities;
+			VectorCopy(entdir, targetdir);
+		}
+	}
+
+	VectorNormalize(targetdir);
+	VectorScale(targetdir, 0.2, targetdir);
+	VectorAdd(targetdir, ent->movedir, targetdir);
+	VectorNormalize(targetdir);
+	VectorCopy(targetdir, ent->movedir);
+	vectoangles(targetdir, ent->s.angles);
+	speed = VectorLength(ent->velocity);
+	VectorScale(targetdir, speed, ent->velocity);
+
+	ent->nextthink = level.time + .1;
+}
+
+void wolfpack_grenade_think(edict_t* ent)
+{
+	edict_t* target = NULL;
+	edict_t* entities = NULL;
+	vec3_t	targetdir, entdir;
+	vec_t	speed;
+	vec3_t	v;
+	vec3_t		origin;
+	int			mod;
+	
+	
+	
+	while ((entities = findradius(entities, ent->s.origin, 1000)) != NULL) {
+		if (!(entities->svflags & SVF_MONSTER) && !entities->client)
+			continue;
+		if (entities == ent->owner->owner)
+			continue;
+		if (!entities->takedamage)
+			continue;
+		if (entities->health <= 0)
+			continue;
+		if (!visible(ent, entities))
+			continue;
+		if (!infront(ent, entities))
+			continue;
+		VectorSubtract(entities->s.origin, ent->s.origin, entdir);
+		entdir[2] += 16;
+		if ((target == NULL) || (VectorLength(entdir) < VectorLength(targetdir)))
+		{
+			target = entities;
+			VectorCopy(entdir, targetdir);
+		}
+	}
+
+	VectorNormalize(targetdir);
+	VectorScale(targetdir, 0.2, targetdir);
+	VectorAdd(targetdir, ent->movedir, targetdir);
+	VectorNormalize(targetdir);
+	VectorCopy(targetdir, ent->movedir);
+	vectoangles(targetdir, ent->s.angles);
+	speed = VectorLength(ent->velocity);
+	VectorScale(targetdir, speed, ent->velocity);
+	
+
+	ent->nextthink = level.time + .1;
+}
+
+
+void wolfpack_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, float timer, float damage_radius, qboolean held)
+{
+	edict_t	*grenade;
+	vec3_t	dir;
+	vec3_t	forward, right, up;
+
+	vectoangles (aimdir, dir);
+	AngleVectors (dir, forward, right, up);
+
+	grenade = G_Spawn();
+	VectorCopy (start, grenade->s.origin);
+	VectorScale (aimdir, speed, grenade->velocity);
+	VectorMA (grenade->velocity, 200 + crandom() * 10.0, up, grenade->velocity);
+	VectorMA (grenade->velocity, crandom() * 10.0, right, grenade->velocity);
+	VectorSet (grenade->avelocity, 300, 300, 300);
+	grenade->movetype = MOVETYPE_FLYMISSILE;
+	grenade->clipmask = MASK_SHOT;
+	grenade->solid = SOLID_BBOX;
+	grenade->s.effects |= EF_GRENADE;
+	VectorClear (grenade->mins);
+	VectorClear (grenade->maxs);
+	grenade->s.modelindex = gi.modelindex ("models/objects/grenade2/tris.md2");
+	grenade->owner = self;
+	grenade->touch = Wolfpack_touch;
+	grenade->nextthink = level.time + .1;
+	grenade->think = wolfpack_grenade_think;
+	grenade->dmg = damage;
+	grenade->dmg_radius = damage_radius;
+	grenade->classname = "hgrenade";
+	grenade->spawnflags = 1;
+	grenade->s.sound = gi.soundindex("weapons/hgrenc1b.wav");
+	gi.sound(self, CHAN_WEAPON, gi.soundindex("weapons/hgrent1a.wav"), 1, ATTN_NORM, 0);
+	gi.linkentity(grenade);
+	if (timer <= 0.0)
+		Grenade_Explode(grenade);
 }
 
 void fire_grenade2 (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, float timer, float damage_radius, qboolean held)
@@ -582,9 +756,7 @@ void fire_grenade2 (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 	grenade->dmg = damage;
 	grenade->dmg_radius = damage_radius;
 	grenade->classname = "hgrenade";
-	if (held)
-		grenade->spawnflags = 3;
-	else
+
 		grenade->spawnflags = 1;
 	grenade->s.sound = gi.soundindex("weapons/hgrenc1b.wav");
 
@@ -596,7 +768,6 @@ void fire_grenade2 (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int 
 		gi.linkentity (grenade);
 	}
 }
-
 
 /*
 =================
@@ -651,6 +822,24 @@ void rocket_touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *su
 	gi.WritePosition (origin);
 	gi.multicast (ent->s.origin, MULTICAST_PHS);
 
+	vec3_t   wolf1;
+	vec3_t   wolf2;
+	vec3_t   wolf3;
+	vec3_t   wolf4;
+	vec3_t   wolf5;
+
+	VectorSet(wolf1, 20, 20, 40);
+	VectorSet(wolf2, 20, -20, 40);
+	VectorSet(wolf3, -20, 20, 40);
+	VectorSet(wolf4, -20, -20, 40);
+	VectorSet(wolf5, 0, 0, 50);
+
+	wolfpack_grenade(ent, origin, wolf1, 120, 10, 1.0, 120, false);
+	wolfpack_grenade(ent, origin, wolf2, 120, 10, 1.0, 120, false);
+	wolfpack_grenade(ent, origin, wolf3, 120, 10, 1.0, 120, false);
+	wolfpack_grenade(ent, origin, wolf4, 120, 10, 1.0, 120, false);
+	wolfpack_grenade(ent, origin, wolf5, 120, 10, 1.0, 120, false);
+
 	G_FreeEdict (ent);
 }
 
@@ -672,8 +861,14 @@ void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 	rocket->s.modelindex = gi.modelindex ("models/objects/rocket/tris.md2");
 	rocket->owner = self;
 	rocket->touch = rocket_touch;
-	rocket->nextthink = level.time + 8000/speed;
-	rocket->think = G_FreeEdict;
+	if (self->client) {
+		rocket->nextthink = level.time + .1;
+		rocket->think = wolfpack_rocket;
+	}
+	else{
+		rocket->nextthink = level.time + 8000/speed;
+		rocket->think = G_FreeEdict;
+	}
 	rocket->dmg = damage;
 	rocket->radius_dmg = radius_damage;
 	rocket->dmg_radius = damage_radius;
@@ -950,4 +1145,160 @@ void fire_bfg (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, f
 		check_dodge (self, bfg->s.origin, dir, speed);
 
 	gi.linkentity (bfg);
+}
+
+void fire_bfg2 (edict_t *self, vec3_t start, vec3_t start2, vec3_t dir, int damage, int speed, float damage_radius)
+{
+	edict_t	*bfg;
+	edict_t	*bfg2;
+
+	bfg = G_Spawn();
+	bfg2 = G_Spawn();
+	VectorCopy (start, bfg->s.origin);
+	VectorCopy (start2, bfg2->s.origin);
+	VectorCopy (dir, bfg->movedir);
+	VectorCopy (dir, bfg2->movedir);
+	vectoangles (dir, bfg->s.angles);
+	vectoangles (dir, bfg2->s.angles);
+	VectorScale (dir, speed, bfg->velocity);
+	VectorScale (dir, speed, bfg2->velocity);
+	bfg->movetype = MOVETYPE_FLYMISSILE;
+	bfg2->movetype = MOVETYPE_FLYMISSILE;
+	bfg->clipmask = MASK_SHOT;
+	bfg2->clipmask = MASK_SHOT;
+	bfg->solid = SOLID_BBOX;
+	bfg2->solid = SOLID_BBOX;
+	bfg->s.effects |= EF_BFG | EF_ANIM_ALLFAST;
+	bfg2->s.effects |= EF_BFG | EF_ANIM_ALLFAST;
+	VectorClear (bfg->mins);
+	VectorClear (bfg2->mins);
+	VectorClear (bfg->maxs);
+	VectorClear (bfg2->maxs);
+	bfg->s.modelindex = gi.modelindex ("sprites/s_bfg1.sp2");
+	bfg2->s.modelindex = gi.modelindex ("sprites/s_bfg1.sp2");
+	bfg->owner = self;
+	bfg2->owner = self;
+	bfg->touch = bfg_touch;
+	bfg2->touch = bfg_touch;
+	bfg->nextthink = level.time + 8000/speed;
+	bfg2->nextthink = level.time + 8000/speed;
+	bfg->think = G_FreeEdict;
+	bfg2->think = G_FreeEdict;
+	bfg->radius_dmg = damage;
+	bfg2->radius_dmg = damage;
+	bfg->dmg_radius = damage_radius;
+	bfg2->dmg_radius = damage_radius;
+	bfg->classname = "bfg blast";
+	bfg2->classname = "bfg blast";
+	bfg->s.sound = gi.soundindex ("weapons/bfg__l1a.wav");
+	bfg2->s.sound = gi.soundindex ("weapons/bfg__l1a.wav");
+
+	bfg->think = bfg_think;
+	bfg2->think = bfg_think;
+	bfg->nextthink = level.time + FRAMETIME;
+	bfg2->nextthink = level.time + FRAMETIME;
+	bfg->teammaster = bfg;
+	bfg2->teammaster = bfg;
+	bfg->teamchain = NULL;
+	bfg2->teamchain = NULL;
+
+	if (self->client)
+		check_dodge (self, bfg->s.origin, dir, speed);
+	if (self->client)
+		check_dodge (self, bfg2->s.origin, dir, speed);
+
+	gi.linkentity (bfg);
+	gi.linkentity (bfg2);
+}
+
+void fire_bfg3 (edict_t *self, vec3_t start, vec3_t start2, vec3_t start3, vec3_t dir, int damage, int speed, float damage_radius)
+{
+	edict_t	*bfg;
+	edict_t	*bfg2;
+	edict_t	*bfg3;
+
+	bfg = G_Spawn();
+	bfg2 = G_Spawn();
+	bfg3 = G_Spawn();
+	VectorCopy (start, bfg->s.origin);
+	VectorCopy (start2, bfg2->s.origin);
+	VectorCopy (start3, bfg3->s.origin);
+	VectorCopy (dir, bfg->movedir);
+	VectorCopy (dir, bfg2->movedir);
+	VectorCopy (dir, bfg3->movedir);
+	vectoangles (dir, bfg->s.angles);
+	vectoangles (dir, bfg2->s.angles);
+	vectoangles (dir, bfg3->s.angles);
+	VectorScale (dir, speed, bfg->velocity);
+	VectorScale (dir, speed, bfg2->velocity);
+	VectorScale (dir, speed, bfg3->velocity);
+	bfg->movetype = MOVETYPE_FLYMISSILE;
+	bfg2->movetype = MOVETYPE_FLYMISSILE;
+	bfg3->movetype = MOVETYPE_FLYMISSILE;
+	bfg->clipmask = MASK_SHOT;
+	bfg2->clipmask = MASK_SHOT;
+	bfg3->clipmask = MASK_SHOT;
+	bfg->solid = SOLID_BBOX;
+	bfg2->solid = SOLID_BBOX;
+	bfg3->solid = SOLID_BBOX;
+	bfg->s.effects |= EF_BFG | EF_ANIM_ALLFAST;
+	bfg2->s.effects |= EF_BFG | EF_ANIM_ALLFAST;
+	bfg3->s.effects |= EF_BFG | EF_ANIM_ALLFAST;
+	VectorClear (bfg->mins);
+	VectorClear (bfg2->mins);
+	VectorClear (bfg3->mins);
+	VectorClear (bfg->maxs);
+	VectorClear (bfg2->maxs);
+	VectorClear (bfg3->maxs);
+	bfg->s.modelindex = gi.modelindex ("sprites/s_bfg1.sp2");
+	bfg2->s.modelindex = gi.modelindex ("sprites/s_bfg1.sp2");
+	bfg3->s.modelindex = gi.modelindex ("sprites/s_bfg1.sp2");
+	bfg->owner = self;
+	bfg2->owner = self;
+	bfg3->owner = self;
+	bfg->touch = bfg_touch;
+	bfg2->touch = bfg_touch;
+	bfg3->touch = bfg_touch;
+	bfg->nextthink = level.time + 8000/speed;
+	bfg2->nextthink = level.time + 8000/speed;
+	bfg3->nextthink = level.time + 8000/speed;
+	bfg->think = G_FreeEdict;
+	bfg2->think = G_FreeEdict;
+	bfg3->think = G_FreeEdict;
+	bfg->radius_dmg = damage;
+	bfg2->radius_dmg = damage;
+	bfg3->radius_dmg = damage;
+	bfg->dmg_radius = damage_radius;
+	bfg2->dmg_radius = damage_radius;
+	bfg3->dmg_radius = damage_radius;
+	bfg->classname = "bfg blast";
+	bfg2->classname = "bfg blast";
+	bfg3->classname = "bfg blast";
+	bfg->s.sound = gi.soundindex ("weapons/bfg__l1a.wav");
+	bfg2->s.sound = gi.soundindex ("weapons/bfg__l1a.wav");
+	bfg3->s.sound = gi.soundindex ("weapons/bfg__l1a.wav");
+
+	bfg->think = bfg_think;
+	bfg2->think = bfg_think;
+	bfg3->think = bfg_think;
+	bfg->nextthink = level.time + FRAMETIME;
+	bfg2->nextthink = level.time + FRAMETIME;
+	bfg3->nextthink = level.time + FRAMETIME;
+	bfg->teammaster = bfg;
+	bfg2->teammaster = bfg;
+	bfg3->teammaster = bfg;
+	bfg->teamchain = NULL;
+	bfg2->teamchain = NULL;
+	bfg3->teamchain = NULL;
+
+	if (self->client)
+		check_dodge (self, bfg->s.origin, dir, speed);
+	if (self->client)
+		check_dodge (self, bfg2->s.origin, dir, speed);
+	if (self->client)
+		check_dodge (self, bfg3->s.origin, dir, speed);
+
+	gi.linkentity (bfg);
+	gi.linkentity (bfg2);
+	gi.linkentity (bfg3);
 }

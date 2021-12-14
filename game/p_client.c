@@ -37,10 +37,18 @@ void SP_misc_teleporter_dest (edict_t *ent);
 // that of the nearest named single player spot
 
 edict_t* player;
-int playerClass = 1;
+int playerClass = 0;
 qboolean abilityOn = false;
-int abilityLength = 10000;
 int abilityOffFrame = 0;
+qboolean superOn = false;
+int superShots;
+int superLength = 150;
+int superOffFrame;
+
+int skillLevel = 0;
+int experience = 0;
+
+int exoticIndex;
 
 static void SP_FixCoopSpots (edict_t *self)
 {
@@ -1811,9 +1819,13 @@ void ClientBeginServerFrame (edict_t *ent)
 	
 	// my stuff
 	if ((abilityOn == true) && (level.framenum > abilityOffFrame)) {
-		if (getClass() == 1) {
-			deactivateAbility();
-		}
+		deactivateAbility();
+	}
+	
+	if ((abilityOn == true) && (level.framenum < abilityOffFrame)) {
+		if (getClass() == 2)
+			player->health += 1;
+		else return;
 	}
 
 }
@@ -1826,78 +1838,225 @@ void ClientBeginServerFrame (edict_t *ent)
 //int abilityOffTime = 0;
 
 
-char setClass(edict_t* ent, int newClass) {
-		
-	if (newClass == 1) { //hunter
+char setClass(int newClass) {
+	if (newClass == 1) //hunter
 		playerClass = newClass;
-		setPlayer(ent);
-		ent->max_health = 75;
-		ent->health = 75;
-		//cvar_t
-	}		
-	if (newClass == 2) { //warlock
+	if (newClass == 2) //warlock
 		playerClass = newClass;
-		setPlayer(ent);
-		ent->max_health = 100;
-		ent->health = 100;
-	}
-	if (newClass == 3) { //titan
+	if (newClass == 3) //titan
 		playerClass = newClass;
-		setPlayer(ent);
-		ent->max_health = 125;
-		ent->health = 125;
-	}
 }
 
 int getClass() {
 	return playerClass;
 }
 
-void useAbility() {
-
-}
-
 void setPlayer(edict_t* ent) {
 	player = ent;
-	char out[30];
-	strcat(out, player->s.origin);
-	gi.cprintf(ent, PRINT_HIGH, out);
+}
+
+edict_t* getPlayer() {
+	return player;
 }
 
 void activateAbility() {
 	int curentClass = getClass();
-	if (curentClass == 1) {
-		abilityOn = true;
-		abilityOffFrame = level.framenum + 100;
-		if (getClass() == 1)
-			player->flags ^= FL_NOTARGET;
+	if (getLevel() < 2) {
+		char out[80];
+		sprintf(out, "% s \n", "Not high enough level");
+		gi.cprintf(player, PRINT_HIGH, out);
 	}
-	else if (curentClass == 2){
-		edict_t* ability_health;
-		edict_t* target;
-		trace_t		tr;
-		ability_health = G_Spawn();
-		VectorCopy(player->s.origin, ability_health->s.origin);
-		ability_health->s.origin[2] += 25;
+	else {
+		if (curentClass == 1) {
+			abilityOn = true;
+			abilityOffFrame = level.framenum + 100;
+			if (getClass() == 1)
+				player->flags ^= FL_NOTARGET;
+		}
+		else if (curentClass == 2) {
+			for (int i = 0; i < 3; i++) {
+				edict_t* ability_health;
+				edict_t* target;
+				trace_t		tr;
 
-		SP_item_health(ability_health);
+				ability_health = G_Spawn();
+				VectorCopy(player->s.origin, ability_health->s.origin);
 
-		/*tr = gi.trace(ability_health->s.origin, ability_health->mins, ability_health->maxs, player->s.origin, player, MASK_SHOT);
-		if (tr.fraction < 1){
-			VectorAdd(tr.plane.normal, ability_health->s.origin, ability_health->s.origin);
-		}*/
+				SP_item_health(ability_health);
 
-		ability_health->team = player->owner->team;
-		ability_health->owner = player->owner;
-		gi.linkentity(ability_health);
+				tr = gi.trace(ability_health->s.origin, ability_health->mins, ability_health->maxs, player->s.origin, player, MASK_SHOT);
+				if (tr.fraction < 1) {
+					VectorAdd(tr.plane.normal, ability_health->s.origin, ability_health->s.origin);
+				}
+
+				gi.linkentity(ability_health);
+			}
+		}
+		else if (curentClass == 3) {
+			for (int i = 0; i < 3; i++) {
+				edict_t* ability_armor;
+				edict_t* target;
+				trace_t		tr;
+
+				ability_armor = G_Spawn();
+				VectorCopy(player->s.origin, ability_armor->s.origin);
+
+				SP_armor_shard(ability_armor);
+
+				tr = gi.trace(ability_armor->s.origin, ability_armor->mins, ability_armor->maxs, player->s.origin, player, MASK_SHOT);
+				if (tr.fraction < 1) {
+					VectorAdd(tr.plane.normal, ability_armor->s.origin, ability_armor->s.origin);
+				}
+
+				gi.linkentity(ability_armor);
+			}
+		}
 	}
 
 	/*char out[30];
 	strcat(out, level.framenum);
 	gi.cprintf(player, PRINT_HIGH, out);*/
 }
+qboolean getSuperStatus() {
+	return superOn;
+}
+
+void setSuperShots() {
+	if (getClass() == 1)
+		superShots = 3;
+	if (getClass() == 2)
+		superShots = 1;
+	if (getClass() == 3)
+		return;
+	else
+		return;
+}
+
+int getSuperShots() {
+	return superShots;
+}
+
+void useSuperShots() {
+	if (getSuperShots() > 0)
+		superShots -= 1;
+	if (getSuperShots() <= 0)
+		superOn = false;
+}
+
+void activateSuper() {
+	if (getLevel() < 3) {
+		char out[80];
+		sprintf(out, "% s \n", "Not high enough level");
+		gi.cprintf(player, PRINT_HIGH, out);
+	}
+	else {
+		if (getClass() == 1) {
+			superOn = true;
+			setSuperShots();
+			player->client->newweapon = FindItem("blaster");
+		}
+		else if (getClass() == 2) {
+			superOn = true;
+			setSuperShots();
+			player->client->newweapon = FindItem("BFG10K");
+			if (player->client->pers.inventory[ITEM_INDEX(FindItem("cells"))] < 50)
+				if (getExotic() == 4)
+					player->client->pers.inventory[player->client->ammo_index] += 50;
+				player->client->pers.inventory[player->client->ammo_index] += 100;
+			if (exoticIndex == 3) {
+				for (int i = 0; i < 3; i++) {
+					edict_t* ability_health;
+					edict_t* target;
+					trace_t		tr;
+
+					ability_health = G_Spawn();
+					VectorCopy(player->s.origin, ability_health->s.origin);
+
+					SP_item_health_large(ability_health);
+
+					tr = gi.trace(ability_health->s.origin, ability_health->mins, ability_health->maxs, player->s.origin, player, MASK_SHOT);
+					if (tr.fraction < 1) {
+						VectorAdd(tr.plane.normal, ability_health->s.origin, ability_health->s.origin);
+					}
+
+					gi.linkentity(ability_health);
+				}
+			}
+		}
+		else if (getClass() == 3) {
+			gitem_t* item;
+			int index;
+
+			item = FindItem("Invulnerability");
+			index = ITEM_INDEX(item);
+			player->client->pers.inventory[index] += 1;
+			item->use(player, item);
+			if (getExotic() == 5) {
+				gitem_t* item2;
+				int index2;
+
+				item2 = FindItem("Quad Damage");
+				index2 = ITEM_INDEX(item2);
+				player->client->pers.inventory[index2] += 1;
+				item2->use(player, item2);
+			}
+		}
+	}
+}
 
 void deactivateAbility() {
-	abilityOn = false;
-	player->flags ^= FL_NOTARGET;
+	if (getClass() == 1) {
+		abilityOn = false;
+		player->flags ^= FL_NOTARGET;
+	}
+	else if (getClass() == 2) {
+		abilityOn = false;
+	}
+	else if (getClass() == 3) {
+		abilityOn = false;
+	}
+	
+}
+
+void addExperience() {
+	experience += 2;
+	if (experience >= 6) {
+		skillLevel++;
+		experience = 0;
+		char out[80];
+		sprintf(out, "% s \n", "Level up!");
+		gi.cprintf(player, PRINT_HIGH, out);
+	}
+}
+
+void quickLevel() {
+	skillLevel++;
+}
+
+int getLevel() {
+	return skillLevel;
+}
+
+
+int getExp() {
+	return experience;
+}
+
+int getExotic() {
+	return exoticIndex;
+}
+
+void setExotic(int index) {
+	if (index == 1) // Wormhusk
+		exoticIndex = 1;
+	else if (index == 2)// Nighthawk
+		exoticIndex = 2;
+	else if (index == 3)// Dire Ahamkara
+		exoticIndex = 3;
+	else if (index == 4)// Contraverse kind of
+		exoticIndex = 4;
+	else if (index == 5)// buff damage
+		exoticIndex = 5;
+	else
+		return;
 }

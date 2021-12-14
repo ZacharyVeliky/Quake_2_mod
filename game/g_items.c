@@ -2132,6 +2132,20 @@ void SP_item_health (edict_t *self)
 	gi.soundindex ("items/n_health.wav");
 }
 
+void SP_armor_shard (edict_t *self)
+{
+	if ( deathmatch->value && ((int)dmflags->value & DF_NO_HEALTH) )
+	{
+		G_FreeEdict (self);
+		return;
+	}
+
+	self->model = "models/items/armor/shard/tris.md2";
+	self->count = 10;
+	SpawnItem (self, FindItem ("Armor Shard"));
+	gi.soundindex ("items/n_health.wav");
+}
+
 /*QUAKED item_health_small (.3 .3 1) (-16 -16 -16) (16 16 16)
 */
 void SP_item_health_small (edict_t *self)

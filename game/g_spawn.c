@@ -144,6 +144,8 @@ void SP_turret_breach (edict_t *self);
 void SP_turret_base (edict_t *self);
 void SP_turret_driver (edict_t *self);
 
+void SP_armor_shard(edict_t *self);
+
 
 spawn_t	spawns[] = {
 	{"item_health", SP_item_health},
@@ -264,9 +266,8 @@ spawn_t	spawns[] = {
 	{"turret_breach", SP_turret_breach},
 	{"turret_base", SP_turret_base},
 	{"turret_driver", SP_turret_driver},
-		// new stuff
-	{"warlock_ability", NULL},
-	{"titan_ability", NULL},
+
+	{"item_armor_shard", SP_armor_shard},
 
 	{NULL, NULL}
 };

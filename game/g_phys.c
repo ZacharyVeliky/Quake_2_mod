@@ -703,7 +703,7 @@ void SV_Physics_Toss (edict_t *ent)
 // add gravity
 	if (ent->movetype != MOVETYPE_FLY
 	&& ent->movetype != MOVETYPE_FLYMISSILE
-	&& ent->movetype != MOVETYPE_RICOCHET)
+	&& ent->movetype != MOVETYPE_HARDLIGHT)
 		SV_AddGravity (ent);
 
 // move angles
@@ -719,19 +719,19 @@ void SV_Physics_Toss (edict_t *ent)
 	{
 		if (ent->movetype == MOVETYPE_BOUNCE)
 			backoff = 1.5;
-		else if (ent->movetype == MOVETYPE_RICOCHET)
+		else if (ent->movetype == MOVETYPE_HARDLIGHT)
 			backoff = 2;
 		else
 			backoff = 1;
 
 		ClipVelocity (ent->velocity, trace.plane.normal, ent->velocity, backoff);
 
-		if (ent->movetype == MOVETYPE_RICOCHET)
+		if (ent->movetype == MOVETYPE_HARDLIGHT)
 		{
 			vectoangles(ent->velocity, ent->s.angles);
 		}
-	// stop if on ground
-		if (trace.plane.normal[2] > 0.7 && ent->movetype != MOVETYPE_RICOCHET)
+
+		if (trace.plane.normal[2] > 0.7 && ent->movetype != MOVETYPE_HARDLIGHT)
 		{		
 			if (ent->velocity[2] < 60 || ent->movetype != MOVETYPE_BOUNCE )
 			{
@@ -742,8 +742,8 @@ void SV_Physics_Toss (edict_t *ent)
 			}
 		}
 
-//		if (ent->touch)
-//			ent->touch (ent, trace.ent, &trace.plane, trace.surface);
+		if (ent->touch)
+			ent->touch (ent, trace.ent, &trace.plane, trace.surface);
 	}
 	
 // check for water transition
@@ -960,7 +960,7 @@ void G_RunEntity (edict_t *ent)
 	case MOVETYPE_BOUNCE:
 	case MOVETYPE_FLY:
 	case MOVETYPE_FLYMISSILE:
-	case MOVETYPE_RICOCHET:
+	case MOVETYPE_HARDLIGHT:
 		SV_Physics_Toss (ent);
 		break;
 	default:
