@@ -4,7 +4,7 @@
 The objective of my game mod project was to make Quake 4 more like Destiny. This includes Changeing weapons, adding Classes and abilities, adding exotic armor, elemental weapon types, and an experience and leveling system. 
 
 ## How to Install
-Drag and drop the release folder into the Quake 2 root folder and add the command +set game MOD to the launch properties of the executable
+Drag and drop the release folder into the Quake 2 root folder and add the command "+set game release" to the launch properties of the executable
 
 ## New Features
 

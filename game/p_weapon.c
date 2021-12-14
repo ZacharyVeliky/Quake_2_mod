@@ -1440,8 +1440,6 @@ void weapon_bfg_fire (edict_t *ent)
 		VectorAdd(tempvec, start, tempvec);
 		VectorSet(tempvec2, 0, -64, 0);
 		VectorAdd(tempvec2, start, tempvec2);
-		VectorSet(tempvec, 0, 64, 0);
-		VectorAdd(tempvec, forward, tempvec);
 		fire_bfg3(ent, start, tempvec, tempvec2, forward, damage, 500, damage_radius);
 		useSuperShots();
 	}
@@ -1450,8 +1448,6 @@ void weapon_bfg_fire (edict_t *ent)
 		VectorAdd(tempvec, start, tempvec);
 		VectorSet(tempvec2, 0, -32, 0);
 		VectorAdd(tempvec2, start, tempvec2);
-		VectorSet(tempvec, 0, 32, 0);
-		VectorAdd(tempvec, forward, tempvec);
 		fire_bfg2(ent, tempvec, tempvec2, forward, damage, 500, damage_radius);
 		useSuperShots();
 	}

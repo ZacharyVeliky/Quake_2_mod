@@ -286,7 +286,7 @@ Draw help computer.
 */
 void HelpComputer (edict_t *ent)
 {
-	char	string[1024];
+	char	string[1123];
 	char	*sk;
 	char	*pc;
 
@@ -308,15 +308,14 @@ void HelpComputer (edict_t *ent)
 		"xv 0 yv 24 cstring2 \"%s\" "		// level name
 		"xv 0 yv 54 cstring2 \"%s\" "		// help 1
 		"xv 0 yv 110 cstring2 \"%s\" "		// help 2
-		"xv 50 yv 164 string2 \"  exp       level     class\" "
-		"xv 50 yv 172 string2 \"  %d/10        %i         %s\" ",
+		"xv 50 yv 164 string2 \"  exp       level\" "
+		"xv 50 yv 172 string2 \"  %d/1         %i\" ",
 		sk,
 		level.level_name,
 		"Press f to use ability\n Press r to use super",
 		"Type the name of the class in\nthe command line to change class:\nhunter, warlock, titan",
 		getExp(),
-		getLevel(),
-		checkClass());
+		getLevel());
 
 	gi.WriteByte (svc_layout);
 	gi.WriteString (string);

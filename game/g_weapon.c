@@ -565,7 +565,7 @@ static void Wolfpack_touch (edict_t *ent, edict_t *other, cplane_t *plane, csurf
 		gi.WriteByte(TE_ROCKET_EXPLOSION);
 	gi.WritePosition(origin);
 	gi.multicast(ent->s.origin, MULTICAST_PHS);
-	G_FreeEdict(ent);
+	Grenade_Explode(ent);
 }
 
 void grenade_custom_touch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf)
@@ -602,6 +602,7 @@ void grenade_custom_touch(edict_t* ent, edict_t* other, cplane_t* plane, csurfac
 		gi.WriteByte(TE_ROCKET_EXPLOSION);
 	gi.WritePosition(origin);
 	gi.multicast(ent->s.origin, MULTICAST_PHS);
+	G_FreeEdict(ent);
 }
 
 void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, float timer, float damage_radius)
