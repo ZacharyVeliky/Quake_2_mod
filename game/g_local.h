@@ -1149,3 +1149,4 @@ int getExp();
 
 int getExotic();
 void setExotic(int index);
+char checkClass();

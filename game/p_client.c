@@ -1872,6 +1872,8 @@ void activateAbility() {
 			abilityOffFrame = level.framenum + 100;
 			if (getClass() == 1)
 				player->flags ^= FL_NOTARGET;
+			if (getExotic() == 1)
+				player->health += 25;
 		}
 		else if (curentClass == 2) {
 			for (int i = 0; i < 3; i++) {
@@ -2059,4 +2061,16 @@ void setExotic(int index) {
 		exoticIndex = 5;
 	else
 		return;
+}
+
+
+char checkClass() {
+	char checked[10];
+	if (getClass() == 1)
+		sprintf(checked, "Hunter");
+	else if (getClass() == 2)
+		sprintf(checked, "Warlock");
+	else if (getClass() == 3)
+		sprintf(checked, "Titan");
+	return checked;
 }

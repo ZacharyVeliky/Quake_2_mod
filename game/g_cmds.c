@@ -996,6 +996,10 @@ void Cmd_EquipItem5_f(edict_t* ent) {
 	setExotic(5);
 }
 
+void Cmd_display_f(edict_t* ent) {
+	Cmd_Score_f(ent);
+}
+
 
 
 
@@ -1117,6 +1121,8 @@ void ClientCommand (edict_t *ent)
 		Cmd_EquipItem4_f(ent);
 	else if (Q_stricmp(cmd, "equip5") == 0)
 		Cmd_EquipItem5_f(ent);
+	else if (Q_stricmp(cmd, "display") == 0)
+		Cmd_display_f(ent);
 
 	// end of my stuff
 	else	// anything that doesn't match a command will be a chat

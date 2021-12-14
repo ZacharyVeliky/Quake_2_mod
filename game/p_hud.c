@@ -154,7 +154,6 @@ void BeginIntermission (edict_t *targ)
 	}
 }
 
-
 /*
 ==================
 DeathmatchScoreboardMessage
@@ -175,6 +174,7 @@ void DeathmatchScoreboardMessage (edict_t *ent, edict_t *killer)
 	gclient_t	*cl;
 	edict_t		*cl_ent;
 	char	*tag;
+
 
 	// sort the clients by score
 	total = 0;
@@ -210,35 +210,21 @@ void DeathmatchScoreboardMessage (edict_t *ent, edict_t *killer)
 
 	for (i=0 ; i<total ; i++)
 	{
-		cl = &game.clients[sorted[i]];
-		cl_ent = g_edicts + 1 + sorted[i];
-
-		picnum = gi.imageindex ("i_fixme");
 		x = (i>=6) ? 160 : 0;
 		y = 32 + 32 * (i%6);
 
-		// add a dogtag
-		if (cl_ent == ent)
-			tag = "tag1";
-		else if (cl_ent == killer)
-			tag = "tag2";
-		else
-			tag = NULL;
-		if (tag)
-		{
 			Com_sprintf (entry, sizeof(entry),
 				"xv %i yv %i picn %s ",x+32, y, tag);
 			j = strlen(entry);
 			if (stringlength + j > 1024)
 				break;
 			strcpy (string + stringlength, entry);
-			stringlength += j;
-		}
+
 
 		// send the layout
 		Com_sprintf (entry, sizeof(entry),
-			"client %i %i %i %i %i %i ",
-			x, y, sorted[i], cl->resp.score, cl->ping, (level.framenum - cl->resp.enterframe)/600);
+			"client %i %i",
+			x, y);
 		j = strlen(entry);
 		if (stringlength + j > 1024)
 			break;
@@ -290,15 +276,6 @@ void Cmd_Score_f (edict_t *ent)
 	ent->client->showscores = true;
 	DeathmatchScoreboard (ent);
 }
-char checkClass() {
-	char checked[10];
-	if (getClass() == 1)
-		sprintf(checked,"Hunter");
-	else if (getClass() == 2)
-		sprintf(checked, "Warlock");
-	else if (getClass() == 3)
-		sprintf(checked, "Titan");
-}
 
 /*
 ==================
@@ -338,8 +315,8 @@ void HelpComputer (edict_t *ent)
 		"Press f to use ability\n Press r to use super",
 		"Type the name of the class in\nthe command line to change class:\nhunter, warlock, titan",
 		getExp(),
-		getLevel()),
-		checkClass();
+		getLevel(),
+		checkClass());
 
 	gi.WriteByte (svc_layout);
 	gi.WriteString (string);
